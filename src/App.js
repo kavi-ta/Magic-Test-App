@@ -8,14 +8,18 @@ import mintContractABI from "./contract/mint.json";
 const getContract = (web3) => {
   const contract = new web3.eth.Contract(
     mintContractABI,
+
     // APOTHEM
-    "0x9E068b57C6EFDd9424d50bE3b23d3995c5C870db"
+    "0x3E97a572eD8C4E9E23AA3be27A73FB7D346b1E39"
+
     // STABILITY
-    // "0x9E068b57C6EFDd9424d50bE3b23d3995c5C870db"
-    // MAINNET
-    // "0x9E068b57C6EFDd9424d50bE3b23d3995c5C870db"
+    // "0x2132bA525132eaB0561af175586771D8ABde14fE"
+
+    // XDC MAINNET
+    // "0xD9E912808cC059cA595e76a0A60c07cb36a40793"
+
     // STABILITY TESTNET
-    // "0x9E068b57C6EFDd9424d50bE3b23d3995c5C870db"
+    // "0x2132bA525132eaB0561af175586771D8ABde14fE"
   );
   return contract;
 };
@@ -31,7 +35,7 @@ const initializeMagicSDK = () => {
       // rpcUrl: `https://gtn.stabilityprotocol.com/zgt/${process.env.REACT_APP_STABLITY_RPC_KEY}`,
       // chainId: 101010,
 
-      // MAINNET
+      // XDC MAINNET
       // rpcUrl: "https://erpc.xinfin.network/",
       // chainId: 50,
 
@@ -50,6 +54,9 @@ const getWeb3 = (magic) => {
 
 function App() {
   // states
+  // Replace with your mint address
+  const mintAddress = "0xe210772554b74e7DB6590174a7C42d144B98c956";
+
   const [email, setEmail] = useState("");
   const [magic, setMagic] = useState(null);
   const [web3, setWeb3] = useState(null);
@@ -76,13 +83,18 @@ function App() {
 
   const handleMint = async () => {
     const gasPrice = await web3.eth.getGasPrice();
-    const res = await contract.methods.mint(account, 10).send({
-      from: account,
-      gas: 1000000,
-      gasPrice: gasPrice,
-    });
+    console.log("🚀 ~ handleMint ~ gasPrice:", gasPrice);
+    const res = await contract.methods
+      .mint(mintAddress, "10000000000000000000")
+      .send({
+        from: account,
+        gas: 1000000,
+        gasPrice: gasPrice,
+      });
+    console.log("🚀 ~ res ~ account:", account);
     console.log("RESPONSE:", res.transactionHash);
   };
+
   const login = async (emailAddress, showUI) => {
     try {
       const did = await magic.auth.loginWithEmailOTP({
@@ -131,7 +143,7 @@ function App() {
         <button
           type="button"
           className="btn btn-light-outline text-white border-white"
-          onClick={account ? handleMint() : handleConnectToMagic()}
+          onClick={account ? handleMint : handleConnectToMagic}
         >
           {account ? "Mint Tokens" : "Connect To Magic"}
         </button>
